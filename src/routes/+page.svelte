@@ -2,6 +2,8 @@
   import { goto } from "$app/navigation";
   import { logged_in } from "$lib/store";
 
+  import { env } from '$env/dynamic/public';
+
   let username: string = "";
   let password: string = "";
   let error: string = "";
@@ -13,7 +15,6 @@
       return;
     }
     try {
-      // Fake authentication call (You can replace this with a real API request)
       const isAuthenticated = await authenticateUser(username, password);
 
       if (isAuthenticated) {
@@ -23,21 +24,33 @@
         error = "Invalid username or password.";
       }
     } catch (err) {
-      error = "Something went wrong. Please try again later.";
+      //@ts-ignore
+      error = err.message;
     }
   };
 
-  // Fake authentication function (replace with real API logic)
   const authenticateUser = async (
     username: string,
     password: string,
   ): Promise<boolean> => {
+    const url = env.PUBLIC_AUTH_URL + '/login';
     // Here you would typically call an API to authenticate the user
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(username === "admin" && password === "password123");
-      }, 100); // Simulate a delay for the authentication request
+    // return new Promise((resolve) => {
+    //   setTimeout(() => {
+    //     resolve(username === "admin" && password === "password123");
+    //   }, 100); // Simulate a delay for the authentication request
+    const res = await fetch(url, {
+      method: "POST",
+      body: JSON.stringify({ username, password })
     });
+
+    if (!res.ok) {
+      const data = await res.json()
+      throw new Error(data.message);
+    }
+
+    return res.json()
+    ;
   };
 </script>
 
