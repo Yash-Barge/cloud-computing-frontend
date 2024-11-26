@@ -1,8 +1,8 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
-  import { logged_in } from "$lib/store";
+  import { logged_in, auth_token, user } from "$lib/store";
 
-  import { env } from '$env/dynamic/public';
+    import { auth_url } from "$lib/url";
 
   let username: string = "";
   let password: string = "";
@@ -15,14 +15,11 @@
       return;
     }
     try {
-      const isAuthenticated = await authenticateUser(username, password);
-
-      if (isAuthenticated) {
-        logged_in.set(true);
-        goto("/store");
-      } else {
-        error = "Invalid username or password.";
-      }
+      const validated_response_body = await authenticateUser(username, password);
+      logged_in.set(true);
+      auth_token.set(validated_response_body.token);
+      user.set(validated_response_body.user);
+      goto("/store");
     } catch (err) {
       //@ts-ignore
       error = err.message;
@@ -32,8 +29,8 @@
   const authenticateUser = async (
     username: string,
     password: string,
-  ): Promise<boolean> => {
-    const url = env.PUBLIC_AUTH_URL + '/login';
+  ): Promise<{ message: string, token: string, user:string }> => {
+    const url = `${auth_url}/login`;
     // Here you would typically call an API to authenticate the user
     // return new Promise((resolve) => {
     //   setTimeout(() => {
@@ -49,8 +46,7 @@
       throw new Error(data.message);
     }
 
-    return res.json()
-    ;
+    return res.json();
   };
 </script>
 
