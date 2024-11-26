@@ -1,12 +1,20 @@
 <script>
     import { goto } from "$app/navigation";
+    import { logged_in, auth_token, user } from "$lib/store";
     import RedirectGate from "$lib/components/RedirectGate.svelte";
+    
+    const logout = () => {
+        logged_in.set(false);
+        auth_token.set("");
+        user.set("");
+        goto("/");
+    }
 </script>
 
 <RedirectGate>
     <div class="header">
         <div class="header-top">
-            <p>Cloud Computing: Group Assignment</p>
+            <div>Cloud Computing: Group Assignment <button class="btn" on:click={logout}>Logout</button></div>
         </div>
         <div class="header-bottom">
             <div on:click={() => goto("/store")}><p>Store</p></div>
@@ -34,7 +42,10 @@
         flex-direction: column;
         justify-content: space-around;
     }
-    .header-top > p {
+    .header-top > div {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
         margin: 0 2vw;
         color: #eee;
         font-size: 2em;
@@ -66,5 +77,18 @@
     .slot-wrapper {
         background-color: #eee;
         min-height: 100vh;
+    }
+    .btn {
+        /* width: 100%; */
+        padding: 4px;
+        margin-top: 8px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .btn:hover {
+        background-color: #45a049;
     }
 </style>

@@ -117,9 +117,9 @@
       />
 
       <!-- <button class="btn" on:click={handle_login_submission}>Login</button> -->
-      <input class="btn" type="submit" value="Login" />
+      <input class="btn" type="submit" value="Signup" />
 
-      {#if login_error}
+      {#if signup_error}
         <div class="login_error-message">{signup_error}</div>
       {/if}
     </form>
