@@ -1,7 +1,8 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { cart_url } from "$lib/url";
+    import { cart_url, orders_url } from "$lib/url";
     import auth_fetch from "$lib/fetch";
+    import { goto } from "$app/navigation";
 
     interface product {
         product_id: number;
@@ -18,6 +19,18 @@
         const data = await res.json();
 
         return data;
+    }
+
+    const place_order = async (e: Event) => {
+        e.preventDefault();
+
+        const res = await auth_fetch(orders_url, { method: "POST" });
+        
+        if (res.ok) {
+            goto("/store/past_orders");
+        } else {
+            console.error(res);
+        }
     }
 
     onMount(async () => {
@@ -42,7 +55,7 @@
     <div class="form">
         <h2>Cart Summary</h2>
         <h3>Total Price: {total_price}</h3>
-        <button class="btn">Place Order</button>
+        <button class="btn" on:click={place_order}>Place Order</button>
     </div>
 </main>
 
@@ -64,18 +77,6 @@
     .form {
         margin: 3vh;
     }
-    .input-field {
-    width: calc(100% - 20px);
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 4px;
-    border: 1px solid #ddd;
-    font-size: 1rem;
-  }
-  .input-field:focus {
-    outline: none;
-    border-color: #4caf50;
-  }
   .btn {
     width: 100%;
     padding: 10px;
